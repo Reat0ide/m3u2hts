@@ -20,7 +20,7 @@ except ImportError:
     import simplejson as json
 
 PROGNUM = re.compile(r"(\d+) - (.*)")  # #EXTINF:0,1 - SLO 1 -> #1 - num, 2 - ime
-URLPART = re.compile(r"^((?P<scheme>.+?)://@?)?(?P<host>.*?)(:(?P<port>\d+?))?$")
+URLPART = re.compile(r"^((?P<scheme>.+?)://?)?(?P<host>.*?)(:(?P<port>\d+?))?$")
 
 CHAN_NUMBERING_GENERATE = 0
 CHAN_NUMBERING_DURATION = 1
@@ -197,7 +197,7 @@ def writechannels39(iface, output):
     #input/iptv/config
     writejson(os.path.join(path, 'config'), {
         'uuid': uuid(),
-        'skipinitscan': 1,
+        'skipinitscan': 0,
         'autodiscovery': 0
     })
     #input/iptv/networks/uuid()
@@ -206,12 +206,12 @@ def writechannels39(iface, output):
         os.makedirs(path)
     writejson(os.path.join(path, 'config'), {
         'networkname': 'IPTV network',  # Network name
-        'skipinitscan': 1,  # Skip initial scan
-        'autodiscovery': 0, # Network discovery
+        'skipinitscan': 0,  # Skip initial scan
+        'autodiscovery': 1, # Network discovery
         'idlescan': 0,      # Idle scan
-        'max_streams': 2,   # Max input streams
+        'max_streams': 0,   # Max input streams
         'max_bandwidth': 0, # Max bandwidth (Kbps)
-        'max_timeout': 10   # Max timeout (seconds)
+        'max_timeout': 30   # Max timeout (seconds)
     })
     #input/iptv/networks/uuid()/muxes
     path = os.path.join(path, 'muxes')
@@ -224,9 +224,9 @@ def writechannels39(iface, output):
         if not os.path.exists(muxpath):
             os.mkdir(muxpath)
         if channel['port']:
-            url = "%s://@%s:%s" % (channel['scheme'], channel['ip'], channel['port'])
+            url = "%s://%s:%s" % (channel['scheme'], channel['ip'], channel['port'])
         else:
-            url = "%s://@%s" % (channel['scheme'], channel['ip'])
+            url = "%s://%s" % (channel['scheme'], channel['ip'])
         jsmux = {
             'iptv_url': url,
             'iptv_interface': iface,
@@ -306,7 +306,7 @@ def main():
                    help=u'program numbers are generated(0), determined from duration(1) or extracted from program names(2)')
     par.add_option('-c', '--codec', action='store', dest='codec', default='cp1250',
                    help=u'input file encoding [default: %default]')
-    par.add_option('-i', '--iface', action='store', dest='iface', default='eth1',
+    par.add_option('-i', '--iface', action='store', dest='iface', default='eth0',
                    help=u'IPTV interface [default: %default]')
     par.add_option('--newformat', action='store_true',
                    help=u'generate TVHeadend 3.9+ compatible configuration files (experimental)')
