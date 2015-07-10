@@ -7,6 +7,8 @@
 # (c) 2012 Gregor Rudolf
 # Licensed under the MIT license:
 # http://www.opensource.org/licenses/mit-license.php
+#
+# python m3u2hts.py -r -i eth0 --newformat -o muxes  -o channel lista_test.m3u
 #===============================================================================
 from optparse import OptionParser
 import codecs
@@ -257,9 +259,10 @@ def writechannels39(iface, output):
         else:
             svcid = None
 
-        #channel/config
+        #channel/config "IPTV network/RSI La 1 HD/Service01"
         if 'channel' in output:
             chanid = uuid()
+            print svcid
             jschan = {
                 'name': channel['name'],
                 'dvr_pre_time': 0,
